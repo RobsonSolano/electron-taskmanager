@@ -42,20 +42,20 @@ tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#lembrete-form {
+#lembrete-form,#lembrete-form-edit{
   display: flex;
   flex-direction: column;
 }
 
-#lembrete-form label {
+#lembrete-form,#lembrete-form-edit label {
   margin-top: 10px;
 }
 
-#lembrete-form input {
+#lembrete-form,#lembrete-form-edit input {
   margin-bottom: 10px;
 }
 
-#lembrete-form button {
+#lembrete-form,#lembrete-form-edit button {
   margin-top: 10px;
   margin-right: 10px;
 }

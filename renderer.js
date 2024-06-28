@@ -44,6 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Lida com a edição de um lembrete
+  lembretesList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('edit-btn')) {
+      const id = event.target.dataset.id;
+      window.location.href = `detail.html?id=${id}`;
+    }
+  });
+
   function fetchAndDisplayLembretes() {
     fetch('http://localhost:3000/listar')
       .then(response => response.json())

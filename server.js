@@ -50,23 +50,44 @@ app.post('/criar', (req, res) => {
 });
 
 // Rota para editar um lembrete
-app.put('/editar/:id', (req, res) => {
+app.get('/editar/:id', (req, res) => {
   const { id } = req.params;
-  const { nome, data } = req.body;
+  const query = 'SELECT id, nome, data FROM lembretes WHERE id = ?';
 
-  if (!nome || !data) {
-    res.status(400).json({ success: false, message: 'Os campos Nome e Data são obrigatórios.' });
-    return;
-  }
-
-  const query = 'UPDATE lembretes SET nome = ?, data = ? WHERE id = ?';
-  connection.query(query, [nome, data, id], (error, results) => {
+  connection.query(query, [id], (error, results) => {
     if (error) {
       console.error('Erro ao executar a query:', error);
-      res.status(500).json({ success: false, message: 'Erro ao atualizar o lembrete.' });
+      res.status(500).json({ success: false, message: 'Erro ao buscar o lembrete.' });
       return;
     }
-    res.json({ success: true, message: 'Lembrete atualizado com sucesso!' });
+
+    if (results.length === 0) {
+      res.status(404).json({ success: false, message: 'Lembrete não encontrado.' });
+      return;
+    }
+
+    res.json(results[0]);
+  });
+});
+
+// Rota para buscar um lembrete pelo ID
+app.get('/editar/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT id, nome, data FROM lembretes WHERE id = ?';
+
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error('Erro ao executar a query:', error);
+      res.status(500).json({ error: 'Erro ao buscar o lembrete.' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: 'Lembrete não encontrado.' });
+      return;
+    }
+
+    res.json(results[0]);
   });
 });
 
@@ -75,5 +96,4 @@ app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);
 });
 
-// Exporta o app para ser utilizado no main.js
-// module.exports = app;
+module.exports = app; // Exporta o app Express para ser utilizado em outras partes do código

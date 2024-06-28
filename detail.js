@@ -3,7 +3,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const lembreteId = urlParams.get('id');
 
 document.addEventListener('DOMContentLoaded', () => {
-  const lembreteForm = document.getElementById('lembrete-form');
+  const lembreteForm = document.getElementById('lembrete-form-edit');
   const cancelBtn = document.getElementById('cancel-btn');
   const errorMessage = document.getElementById('error-message');
   const flashMessage = document.getElementById('flash-message');
@@ -26,8 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ipcRenderer.on('load-lembrete-response', (event, lembrete) => {
-    document.getElementById('nome').value = lembrete.nome;
-    document.getElementById('data').value = lembrete.data;
+    console.log('Dados do lembrete recebidos no renderer:', lembrete);
+    if (lembrete.success !== false) {
+      const dataFormatada = new Date(lembrete.data).toISOString().substr(0, 10); 
+      document.getElementById('nome').value = lembrete.nome;
+      document.getElementById('data').value = dataFormatada;
+    } else {
+      errorMessage.textContent = lembrete.message || 'Erro ao carregar o lembrete.';
+    }
   });
 
   ipcRenderer.on('update-lembrete-response', (event, response) => {
