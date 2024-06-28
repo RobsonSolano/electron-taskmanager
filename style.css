@@ -41,3 +41,25 @@ th {
 tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
+#lembrete-form {
+  display: flex;
+  flex-direction: column;
+}
+
+#lembrete-form label {
+  margin-top: 10px;
+}
+
+#lembrete-form input {
+  margin-bottom: 10px;
+}
+
+#lembrete-form button {
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+#flash-message {
+  margin-top: 20px;
+}

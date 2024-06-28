@@ -49,7 +49,31 @@ app.post('/criar', (req, res) => {
   });
 });
 
+// Rota para editar um lembrete
+app.put('/editar/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome, data } = req.body;
+
+  if (!nome || !data) {
+    res.status(400).json({ success: false, message: 'Os campos Nome e Data são obrigatórios.' });
+    return;
+  }
+
+  const query = 'UPDATE lembretes SET nome = ?, data = ? WHERE id = ?';
+  connection.query(query, [nome, data, id], (error, results) => {
+    if (error) {
+      console.error('Erro ao executar a query:', error);
+      res.status(500).json({ success: false, message: 'Erro ao atualizar o lembrete.' });
+      return;
+    }
+    res.json({ success: true, message: 'Lembrete atualizado com sucesso!' });
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);
 });
+
+// Exporta o app para ser utilizado no main.js
+// module.exports = app;

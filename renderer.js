@@ -51,10 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         lembretesList.innerHTML = '';
         data.forEach(lembrete => {
           const row = document.createElement('tr');
+          const dataFormatada = new Date(lembrete.data).toLocaleDateString('pt-BR');
           row.innerHTML = `
             <td>${lembrete.id}</td>
             <td>${lembrete.nome}</td>
-            <td>${lembrete.data}</td>
+            <td>${dataFormatada}</td>
+            <td><button class="edit-btn" data-id="${lembrete.id}">Editar</button></td>
           `;
           lembretesList.appendChild(row);
         });
