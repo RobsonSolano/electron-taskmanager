@@ -3,16 +3,16 @@ const urlParams = new URLSearchParams(window.location.search);
 const lembreteId = urlParams.get('id');
 
 document.addEventListener('DOMContentLoaded', () => {
-  const lembreteForm = document.getElementById('lembrete-form-edit');
-  const cancelBtn = document.getElementById('cancel-btn');
+  const lembreteFormEdit = document.getElementById('lembrete-form-edit');
+  const cancelBtnEdit = document.getElementById('cancel-btn-edit');
   const errorMessage = document.getElementById('error-message');
   const flashMessage = document.getElementById('flash-message');
 
-  cancelBtn.addEventListener('click', () => {
+  cancelBtnEdit.addEventListener('click', () => {
     window.location.href = 'index.html';
   });
 
-  lembreteForm.addEventListener('submit', (event) => {
+  lembreteFormEdit.addEventListener('submit', (event) => {
     event.preventDefault();
     const nome = document.getElementById('nome').value;
     const data = document.getElementById('data').value;
@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    console.log(`Enviando atualização para o lembrete com ID: ${lembreteId}, Nome: ${nome}, Data: ${data}`);
     ipcRenderer.send('update-lembrete', { id: lembreteId, nome, data });
   });
 
   ipcRenderer.on('load-lembrete-response', (event, lembrete) => {
-    console.log('Dados do lembrete recebidos no renderer:', lembrete);
     if (lembrete.success !== false) {
       const dataFormatada = new Date(lembrete.data).toISOString().substr(0, 10); 
       document.getElementById('nome').value = lembrete.nome;
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ipcRenderer.on('update-lembrete-response', (event, response) => {
+    console.log('Resposta da atualização do lembrete:', response);
     if (response.success) {
       flashMessage.textContent = 'Lembrete atualizado com sucesso!';
       setTimeout(() => { flashMessage.textContent = ''; window.location.href = 'index.html'; }, 3000);

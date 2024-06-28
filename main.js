@@ -69,3 +69,20 @@ ipcMain.on('load-lembrete', (event, id) => {
       event.reply('load-lembrete-response', { success: false, message: 'Erro ao obter o lembrete.' });
     });
 });
+
+ipcMain.on('update-lembrete', (event, lembrete) => {
+  const { id, nome, data } = lembrete;
+  const dataFormatada = new Date(data).toISOString().substr(0, 10);
+
+  console.log(`Atualizando lembrete com ID: ${id}, Nome: ${nome}, Data: ${dataFormatada}`);
+
+  axios.put(`http://localhost:3000/editar/${id}`, { nome, data: dataFormatada })
+    .then(response => {
+      console.log('Lembrete atualizado com sucesso:', response.data);
+      event.reply('update-lembrete-response', { success: true, message: 'Lembrete atualizado com sucesso!' });
+    })
+    .catch(error => {
+      console.error('Erro ao atualizar o lembrete:', error);
+      event.reply('update-lembrete-response', { success: false, message: 'Erro ao atualizar o lembrete.' });
+    });
+});
