@@ -12,10 +12,9 @@ const connection = mysql.createConnection({
 connection.connect(err => {
   if (err) {
     console.error('Erro ao conectar ao banco de dados:', err);
-    // return;
-  }else{
+    return;
+  }
   console.log('Conexão com o banco de dados estabelecida!');
-}
 });
 
 // Rota para listar os lembretes

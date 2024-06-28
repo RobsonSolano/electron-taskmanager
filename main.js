@@ -1,22 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-const mysql = require('mysql');
-
-// Configuração da conexão com o MySQL
-const connection = mysql.createConnection({
-  host: '127.0.0.1', // Atualize este IP se necessário
-  user: 'root_executaveis',
-  password: '1234',
-  database: 'estudo_executavel'
-});
-
-// Conecta ao MySQL
-connection.connect(err => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    return;
-  }
-  console.log('Conexão com o banco de dados estabelecida!');
-});
+const path = require('path');
 
 // Código do Electron para criar a janela principal
 function createWindow() {
@@ -24,7 +7,9 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false, // Necessário para usar Node.js e Electron API no renderer.js
+      preload: path.join(__dirname, 'preload.js') // Adiciona o preload
     }
   });
 
@@ -34,10 +19,12 @@ function createWindow() {
 // Evento quando o Electron termina de inicializar
 app.on('ready', () => {
   createWindow();
+  require('./server'); // Inicia o servidor Express
 });
 
-// Encerra a conexão com o MySQL quando o Electron for fechado
+// Encerra a aplicação quando todas as janelas são fechadas
 app.on('window-all-closed', () => {
-  connection.end();
-  app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
