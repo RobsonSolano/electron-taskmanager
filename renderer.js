@@ -44,11 +44,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  ipcRenderer.on('delete-lembrete-response', (event, response) => {
+    if (response.success) {
+      flashMessage.textContent = 'Lembrete finalizado com sucesso!';
+      setTimeout(() => { flashMessage.textContent = ''; }, 3000);
+      fetchAndDisplayLembretes();
+    } else {
+      errorMessage.textContent = response.message;
+    }
+  });
+
   // Lida com a edição de um lembrete
   lembretesList.addEventListener('click', (event) => {
     if (event.target.classList.contains('edit-btn')) {
       const id = event.target.dataset.id;
       window.location.href = `detail.html?id=${id}`;
+    } else if (event.target.classList.contains('delete-btn')) {
+      const id = event.target.dataset.id;
+      const confirmation = confirm('Essa tarefa já foi realizada?');
+      if (confirmation) {
+        ipcRenderer.send('delete-lembrete', id);
+      }
     }
   });
 
@@ -65,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${lembrete.nome}</td>
             <td>${dataFormatada}</td>
             <td><button class="edit-btn" data-id="${lembrete.id}">Editar</button></td>
+            <td><button class="delete-btn" data-id="${lembrete.id}">Feito</button></td>
           `;
           lembretesList.appendChild(row);
         });

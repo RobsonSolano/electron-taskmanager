@@ -114,6 +114,21 @@ app.put('/editar/:id', (req, res) => {
   });
 });
 
+// Rota para marcar o lembrete como deletado
+app.put('/deletar/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'UPDATE lembretes SET deletado = 1 WHERE id = ?';
+
+  connection.query(query, [id], (error, results) => {
+    if (error) {
+      console.error('Erro ao executar a query:', error);
+      res.status(500).json({ success: false, message: 'Erro ao marcar o lembrete como deletado.' });
+      return;
+    }
+    res.json({ success: true, message: 'Lembrete marcado como deletado com sucesso!' });
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);

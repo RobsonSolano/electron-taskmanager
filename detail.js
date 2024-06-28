@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Resposta da atualização do lembrete:', response);
     if (response.success) {
       flashMessage.textContent = 'Lembrete atualizado com sucesso!';
-      setTimeout(() => { flashMessage.textContent = ''; window.location.href = 'index.html'; }, 3000);
+      setTimeout(() => { flashMessage.textContent = ''; window.location.href = 'index.html'; }, 800);
     } else {
       errorMessage.textContent = response.message;
     }
