@@ -1,0 +1,21 @@
+{
+  "name": "tarefas",
+  "version": "1.0.0",
+  "description": "Agenda de tarefas",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "package": "electron-packager . my-electron-app --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "author": "Robson Solano",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^31.1.0",
+    "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  }
+}
