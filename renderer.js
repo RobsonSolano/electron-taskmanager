@@ -1,15 +1,54 @@
+const { ipcRenderer } = require('electron');
+
 document.addEventListener('DOMContentLoaded', () => {
   const lembretesList = document.getElementById('lembretes-list');
+  const showFormBtn = document.getElementById('show-form-btn');
+  const formContainer = document.getElementById('form-container');
+  const lembreteForm = document.getElementById('lembrete-form');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const errorMessage = document.getElementById('error-message');
+  const flashMessage = document.getElementById('flash-message');
 
-  // Função para buscar e exibir os lembretes
+  showFormBtn.addEventListener('click', () => {
+    formContainer.style.display = 'block';
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    formContainer.style.display = 'none';
+    lembreteForm.reset();
+    errorMessage.textContent = '';
+  });
+
+  lembreteForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const nome = document.getElementById('nome').value;
+    const data = document.getElementById('data').value;
+
+    if (!nome || !data) {
+      errorMessage.textContent = 'Os campos Nome e Data são obrigatórios.';
+      return;
+    }
+
+    ipcRenderer.send('create-lembrete', { nome, data });
+  });
+
+  ipcRenderer.on('create-lembrete-response', (event, response) => {
+    if (response.success) {
+      formContainer.style.display = 'none';
+      lembreteForm.reset();
+      flashMessage.textContent = 'Lembrete cadastrado com sucesso!';
+      setTimeout(() => { flashMessage.textContent = ''; }, 3000);
+      fetchAndDisplayLembretes();
+    } else {
+      errorMessage.textContent = response.message;
+    }
+  });
+
   function fetchAndDisplayLembretes() {
     fetch('http://localhost:3000/listar')
       .then(response => response.json())
       .then(data => {
-        // Limpa o conteúdo atual da tabela
         lembretesList.innerHTML = '';
-
-        // Adiciona os lembretes como linhas na tabela
         data.forEach(lembrete => {
           const row = document.createElement('tr');
           row.innerHTML = `
@@ -25,6 +64,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Chamada inicial para carregar os lembretes ao abrir a página
   fetchAndDisplayLembretes();
 });

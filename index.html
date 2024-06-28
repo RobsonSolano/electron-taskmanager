@@ -9,6 +9,20 @@
 <body>
   <div class="container">
     <h1>Listagem de Lembretes</h1>
+    <button id="show-form-btn">Cadastrar Novo Lembrete</button>
+    <div id="form-container" style="display: none;">
+      <h2>Cadastrar Lembrete</h2>
+      <form id="lembrete-form">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+        <button type="submit">Cadastrar</button>
+        <button type="button" id="cancel-btn">Cancelar</button>
+      </form>
+      <div id="error-message" style="color: red;"></div>
+    </div>
+    <div id="flash-message" style="color: green;"></div>
     <table id="lembretes-table">
       <thead>
         <tr>
