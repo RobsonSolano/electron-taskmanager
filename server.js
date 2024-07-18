@@ -1,33 +1,32 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const sqlite3 = require('sqlite3').verbose();
 const app = express();
 
 app.use(bodyParser.json());
 
-const connection = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: '123',
-  database: 'estudo_executavel'
-});
+const db = new sqlite3.Database('./database.sqlite'); // Usando um arquivo de banco de dados para persistência
 
-connection.connect(err => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    return;
-  }
-  console.log('Conexão com o banco de dados estabelecida!');
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS lembretes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      data DATE NOT NULL,
+      deletado INTEGER NOT NULL DEFAULT 0
+    )
+  `);
+  console.log('Banco de dados inicializado com sucesso!');
 });
 
 app.get('/listar', (req, res) => {
-  connection.query('SELECT id, nome, data FROM lembretes WHERE deletado = 0', (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
+  db.all('SELECT id, nome, data FROM lembretes WHERE deletado = 0', [], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar os lembretes:', err);
       res.status(500).json({ error: 'Erro ao buscar os lembretes.' });
       return;
     }
-    res.json(results);
+    res.json(rows);
   });
 });
 
@@ -39,59 +38,34 @@ app.post('/criar', (req, res) => {
   }
 
   const query = 'INSERT INTO lembretes (nome, data) VALUES (?, ?)';
-  connection.query(query, [nome, data], (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
+  db.run(query, [nome, data], function(err) {
+    if (err) {
+      console.error('Erro ao criar o lembrete:', err);
       res.status(500).json({ success: false, message: 'Erro ao criar o lembrete.' });
       return;
     }
-    res.json({ success: true, message: 'Lembrete criado com sucesso!' });
+    res.json({ success: true, message: 'Lembrete criado com sucesso!', id: this.lastID });
   });
 });
 
-// Rota para editar um lembrete
 app.get('/editar/:id', (req, res) => {
   const { id } = req.params;
   const query = 'SELECT id, nome, data FROM lembretes WHERE id = ?';
 
-  connection.query(query, [id], (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
-      res.status(500).json({ success: false, message: 'Erro ao buscar o lembrete.' });
-      return;
-    }
-
-    if (results.length === 0) {
-      res.status(404).json({ success: false, message: 'Lembrete não encontrado.' });
-      return;
-    }
-
-    res.json(results[0]);
-  });
-});
-
-// Rota para buscar um lembrete pelo ID
-app.get('/editar/:id', (req, res) => {
-  const { id } = req.params;
-  const query = 'SELECT id, nome, data FROM lembretes WHERE id = ?';
-
-  connection.query(query, [id], (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
+  db.get(query, [id], (err, row) => {
+    if (err) {
+      console.error('Erro ao buscar o lembrete:', err);
       res.status(500).json({ error: 'Erro ao buscar o lembrete.' });
       return;
     }
-
-    if (results.length === 0) {
+    if (!row) {
       res.status(404).json({ error: 'Lembrete não encontrado.' });
       return;
     }
-
-    res.json(results[0]);
+    res.json(row);
   });
 });
 
-// Rota para atualizar os dados do Lembrete
 app.put('/editar/:id', (req, res) => {
   const { id } = req.params;
   const { nome, data } = req.body;
@@ -101,31 +75,28 @@ app.put('/editar/:id', (req, res) => {
     return;
   }
 
-  console.log(`Atualizando lembrete no banco de dados com ID: ${id}, Nome: ${nome}, Data: ${data}`);
   const query = 'UPDATE lembretes SET nome = ?, data = ? WHERE id = ?';
-  connection.query(query, [nome, data, id], (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
+  db.run(query, [nome, data, id], function(err) {
+    if (err) {
+      console.error('Erro ao atualizar o lembrete:', err);
       res.status(500).json({ success: false, message: 'Erro ao atualizar o lembrete.' });
       return;
     }
-
     res.json({ success: true, message: 'Lembrete atualizado com sucesso!' });
   });
 });
 
-// Rota para marcar o lembrete como deletado
 app.put('/deletar/:id', (req, res) => {
   const { id } = req.params;
   const query = 'UPDATE lembretes SET deletado = 1 WHERE id = ?';
 
-  connection.query(query, [id], (error, results) => {
-    if (error) {
-      console.error('Erro ao executar a query:', error);
-      res.status(500).json({ success: false, message: 'Erro ao marcar o lembrete como deletado.' });
+  db.run(query, [id], function(err) {
+    if (err) {
+      console.error('Erro ao deletar o lembrete:', err);
+      res.status(500).json({ success: false, message: 'Erro ao deletar o lembrete.' });
       return;
     }
-    res.json({ success: true, message: 'Lembrete marcado como deletado com sucesso!' });
+    res.json({ success: true, message: 'Lembrete deletado com sucesso!' });
   });
 });
 
@@ -134,4 +105,4 @@ app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);
 });
 
-module.exports = app; // Exporta o app Express para ser utilizado em outras partes do código
+module.exports = app;
