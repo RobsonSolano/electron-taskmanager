@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhe do Lembrete</title>
+  <link rel="stylesheet" href="bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
+  
 </head>
-<body>
-  <div class="container">
+
+<body class="d-flex vh-100 align-items-center">
+  <div class="container ">
     <h1>Editar Lembrete</h1>
-    <form id="lembrete-form-edit">
-      <label for="nome">Nome:</label>
-      <input type="text" id="nome" name="nome" required>
-      <label for="data">Data:</label>
-      <input type="date" id="data" name="data" required>
-      <button type="submit">Salvar</button>
-      <button type="button" id="cancel-btn-edit">Cancelar</button>
+    <form id="lembrete-form-edit" class="d-flex flex-collumn gap-3">
+      <div class="inputs d-flex gap-3 align-items-center">
+        <div class="form-group w-100">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" class="form-control" required>
+        </div>
+
+        <div class="form-group w-100">
+          <label for="data">Data:</label>
+          <input type="date" id="data" name="data" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="area-buttons d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-primary  btn-sm" id="cancel-btn-edit">Cancelar</button>
+        <button type="submit" class="btn btn-success  btn-sm">Salvar</button>
+      </div>
     </form>
     <div id="error-message" style="color: red;"></div>
     <div id="flash-message" style="color: green;"></div>
   </div>
   <script src="detail.js"></script>
 </body>
+
 </html>

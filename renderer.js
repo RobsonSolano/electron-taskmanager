@@ -80,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${lembrete.id}</td>
             <td>${lembrete.nome}</td>
             <td>${dataFormatada}</td>
-            <td><button class="edit-btn" data-id="${lembrete.id}">Editar</button></td>
-            <td><button class="delete-btn" data-id="${lembrete.id}">Feito</button></td>
+            <td><button class="edit-btn btn btn-info btn-sm text-white" data-id="${lembrete.id}">Editar</button></td>
+            <td><button class="btn-sm delete-btn btn btn-danger" data-id="${lembrete.id}">Feito</button></td>
           `;
           lembretesList.appendChild(row);
         });

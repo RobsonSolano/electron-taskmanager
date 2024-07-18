@@ -7,8 +7,8 @@ app.use(bodyParser.json());
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
-  user: 'root_executaveis',
-  password: '1234',
+  user: 'root',
+  password: '123',
   database: 'estudo_executavel'
 });
 
